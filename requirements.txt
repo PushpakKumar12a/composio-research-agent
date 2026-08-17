@@ -1,0 +1,10 @@
+composio-core
+composio-langchain
+langchain
+langchain-community
+langchain-openai
+tavily-python
+httpx
+beautifulsoup4
+jinja2
+python-dotenv

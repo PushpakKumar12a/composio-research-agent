@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Apps API & Integration Research — Developer Toolkit Feasibility Analysis</title>
+    <meta name="description" content="Executive research report analyzing 100 developer APIs for integration buildability, auth methods, and API surfaces.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: #1f2937;
+            --bg-card-hover: #374151;
+            --border: #1f2937;
+            --border-light: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-1: #3b82f6;  
+            --accent-2: #2563eb;  
+            --accent-3: #0284c7;  
+            --accent-4: #10b981;  
+            --accent-5: #f59e0b;  
+            --accent-6: #ef4444;  
+            --accent-7: #6366f1;  
+            --gradient-1: linear-gradient(135deg, #2563eb, #3b82f6);
+            --gradient-2: linear-gradient(135deg, #0284c7, #10b981);
+            --gradient-3: linear-gradient(135deg, #f59e0b, #ef4444);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-xs: 4px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-light) var(--bg-secondary);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(55, 65, 81, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(55, 65, 81, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        section {
+            padding: 64px 0;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+        }
+
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav .logo-badge {
+            background: var(--accent-2);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        nav .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav .nav-links a:hover { color: var(--accent-1); }
+
+        
+        .hero {
+            padding: 100px 0 80px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--accent-1);
+            font-weight: 600;
+            margin-bottom: 28px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto 48px;
+            line-height: 1.7;
+        }
+
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.4rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-card:nth-child(1) .stat-value { color: var(--accent-1); }
+        .stat-card:nth-child(2) .stat-value { color: var(--accent-3); }
+        .stat-card:nth-child(3) .stat-value { color: var(--accent-4); }
+        .stat-card:nth-child(4) .stat-value { color: var(--accent-5); }
+        .stat-card:nth-child(5) .stat-value { color: var(--accent-7); }
+
+        .stat-card .stat-label {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        
+        .section-header {
+            margin-bottom: 48px;
+        }
+
+        .section-header .section-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-1);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 600px;
+        }
+
+        
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .insight-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .insight-card:nth-child(1)::before { background: var(--gradient-1); }
+        .insight-card:nth-child(2)::before { background: var(--gradient-2); }
+        .insight-card:nth-child(3)::before { background: var(--gradient-3); }
+        .insight-card:nth-child(4)::before { background: linear-gradient(135deg, var(--accent-7), var(--accent-2)); }
+        .insight-card:nth-child(5)::before { background: linear-gradient(135deg, var(--accent-3), var(--accent-1)); }
+        .insight-card:nth-child(6)::before { background: linear-gradient(135deg, var(--accent-4), var(--accent-3)); }
+
+        .insight-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .insight-card .insight-icon {
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+        }
+
+        .insight-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .insight-card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .insight-card .highlight {
+            color: var(--accent-1);
+            font-weight: 700;
+        }
+
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 24px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+        }
+
+        .chart-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        
+        .table-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-1);
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .filter-select:focus { outline: none; border-color: var(--accent-1); }
+
+        .data-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: color 0.2s;
+        }
+
+        .data-table th:hover { color: var(--accent-1); }
+        .data-table th .sort-arrow { margin-left: 4px; opacity: 0.4; }
+        .data-table th.sorted .sort-arrow { opacity: 1; color: var(--accent-1); }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(42, 42, 74, 0.5);
+            vertical-align: top;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .data-table .app-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .data-table .app-website {
+            color: var(--accent-3);
+            font-size: 0.78rem;
+            text-decoration: none;
+        }
+
+        .data-table .app-website:hover { text-decoration: underline; }
+
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .badge-easy { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-moderate { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-hard { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-not-feasible { background: rgba(107, 114, 128, 0.15); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.3); }
+        .badge-unknown { background: rgba(107, 114, 128, 0.1); color: #6b7280; border: 1px solid rgba(107, 114, 128, 0.2); }
+
+        .badge-oauth { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+        .badge-apikey { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+        .badge-token { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .badge-basic { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
+
+        .badge-selfserve { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .badge-trial { background: rgba(6, 182, 212, 0.12); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.25); }
+        .badge-paid { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+        .badge-gated { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+
+        .auth-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+
+        
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 32px 0;
+        }
+
+        .arch-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            text-align: center;
+            min-width: 160px;
+            transition: all 0.3s;
+        }
+
+        .arch-node:hover {
+            border-color: var(--accent-1);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .arch-node .node-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .arch-node .node-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+        .arch-node .node-desc { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .arch-arrow {
+            color: var(--accent-1);
+            font-size: 1.4rem;
+            opacity: 0.6;
+        }
+
+        
+        .v-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .v-metric {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .v-metric .v-value {
+            font-size: 2.4rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .v-metric .v-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .v-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .v-table th, .v-table td {
+            padding: 10px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .v-table th {
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        
+        .heatmap-container {
+            overflow-x: auto;
+            margin: 24px 0;
+        }
+
+        .heatmap {
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            width: 100%;
+        }
+
+        .heatmap th, .heatmap td {
+            padding: 10px 14px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .heatmap th {
+            font-weight: 700;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+
+        .heatmap th:first-child {
+            text-align: left;
+            min-width: 200px;
+        }
+
+        .heatmap .heat-0 { background: transparent; color: var(--text-muted); }
+        .heatmap .heat-1 { background: rgba(99, 102, 241, 0.1); }
+        .heatmap .heat-2 { background: rgba(99, 102, 241, 0.2); }
+        .heatmap .heat-3 { background: rgba(99, 102, 241, 0.3); }
+        .heatmap .heat-4 { background: rgba(99, 102, 241, 0.4); }
+        .heatmap .heat-5 { background: rgba(99, 102, 241, 0.55); color: #fff; }
+
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        footer a { color: var(--accent-1); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        
+        @media (max-width: 768px) {
+            .hero { padding: 60px 0 40px; }
+            .hero h1 { font-size: 1.8rem; }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .insight-grid { grid-template-columns: 1fr; }
+            .chart-grid { grid-template-columns: 1fr; }
+            nav .nav-links { display: none; }
+            .arch-flow { flex-direction: column; }
+            .arch-arrow { transform: rotate(90deg); }
+        }
+
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: var(--radius-xs);
+            font-size: 0.85em;
+            color: var(--accent-3);
+        }
+
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin: 16px 0;
+        }
+
+        
+        .tab-container { margin: 24px 0; }
+        .tab-buttons {
+            display: flex;
+            gap: 2px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn.active {
+            color: var(--accent-1);
+            border-bottom-color: var(--accent-1);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<nav>
+    <div class="container">
+        <div class="logo">⚡ API Integration Intelligence — 100 App Research</div>
+        <ul class="nav-links">
+            <li><a href="#patterns">Patterns</a></li>
+            <li><a href="#data">Data</a></li>
+            <li><a href="#charts">Charts</a></li>
+            <li><a href="#agent">Agent</a></li>
+            <li><a href="#verification">Verification</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="container">
+        <div class="hero-badge animate-in">📊 API Feasibility Research</div>
+        <h1 class="animate-in delay-1">
+            <span class="gradient-text">{{ total_apps }} Apps</span> Analyzed for<br>
+            Developer Toolkit Buildability
+        </h1>
+        <p class="subtitle animate-in delay-2">
+            An AI research agent analyzed authentication methods, API surfaces, access models, and MCP readiness across {{ total_apps }} apps in 10 categories — revealing clear patterns for developer toolkit prioritization.
+        </p>
+        <div class="stat-grid animate-in delay-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ top_auth_pct }}%</div>
+                <div class="stat-label">{{ top_auth }} Dominant Auth</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ self_serve_pct }}%</div>
+                <div class="stat-label">Self-Serve Access</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ easy_pct }}%</div>
+                <div class="stat-label">Easy to Build</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ rest_pct }}%</div>
+                <div class="stat-label">REST APIs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ mcp_pct }}%</div>
+                <div class="stat-label">Have MCP Servers</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="patterns">
+    <div class="container">
+        <div class="section-header animate-in">
+            <span class="section-tag">Key Findings</span>
+            <h2>Patterns & Insights</h2>
+            <p>Six major patterns emerged from analyzing {{ total_apps }} apps across auth, access, API design, and buildability.</p>
+        </div>
+        <div class="insight-grid" id="insight-cards">
+            
+        </div>
+    </div>
+</section>
+
+<section id="charts" style="padding-top: 40px;">
+    <div class="container">
+        <div class="section-header animate-in">
+            <span class="section-tag">Visualizations</span>
+            <h2>Distribution Analysis</h2>
+            <p>How auth methods, access models, and buildability break down across categories.</p>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>🔐 Authentication Methods</h3>
+                <div class="chart-container"><canvas id="authChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>🚪 Access Model</h3>
+                <div class="chart-container"><canvas id="serveChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>🏗️ Buildability Verdict</h3>
+                <div class="chart-container"><canvas id="buildChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>🚧 Top Blockers</h3>
+                <div class="chart-container"><canvas id="blockerChart"></canvas></div>
+            </div>
+        </div>
+
+        
+        <div class="chart-card" style="margin-top: 24px;">
+            <h3>🗺️ Buildability by Category</h3>
+            <div class="heatmap-container">
+                <table class="heatmap" id="buildHeatmap">
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="data">
+    <div class="container">
+        <div class="section-header animate-in">
+            <span class="section-tag">Complete Dataset</span>
+            <h2>All {{ total_apps }} Apps</h2>
+            <p>Click column headers to sort. Use filters to narrow the view.</p>
+        </div>
+        
+        <div class="table-controls">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍  Search apps...">
+            <select class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+            </select>
+            <select class="filter-select" id="buildFilter">
+                <option value="">All Verdicts</option>
+                <option value="Easy">Easy</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Hard">Hard</option>
+                <option value="Not Feasible">Not Feasible</option>
+            </select>
+            <select class="filter-select" id="serveFilter">
+                <option value="">All Access</option>
+                <option value="Self-Serve Free">Self-Serve Free</option>
+                <option value="Self-Serve Trial">Self-Serve Trial</option>
+                <option value="Paid Plan Required">Paid Plan</option>
+                <option value="Admin/Partner Gated">Gated</option>
+                <option value="Contact Sales">Contact Sales</option>
+            </select>
+            <select class="filter-select" id="mcpFilter">
+                <option value="">All MCP Status</option>
+                <option value="available">MCP Available</option>
+                <option value="needed">MCP Needed</option>
+            </select>
+        </div>
+        
+        <div class="data-table-wrapper">
+            <table class="data-table" id="appTable">
+                <thead>
+                    <tr>
+                        <th data-sort="id"># <span class="sort-arrow">↕</span></th>
+                        <th data-sort="name">App <span class="sort-arrow">↕</span></th>
+                        <th data-sort="category">Category <span class="sort-arrow">↕</span></th>
+                        <th data-sort="description">Description <span class="sort-arrow">↕</span></th>
+                        <th data-sort="auth">Auth <span class="sort-arrow">↕</span></th>
+                        <th data-sort="self_serve">Access <span class="sort-arrow">↕</span></th>
+                        <th data-sort="api_type">API <span class="sort-arrow">↕</span></th>
+                        <th data-sort="api_breadth">Breadth <span class="sort-arrow">↕</span></th>
+                        <th data-sort="has_mcp">MCP Status <span class="sort-arrow">↕</span></th>
+                        <th data-sort="buildability_verdict">Verdict <span class="sort-arrow">↕</span></th>
+                        <th data-sort="main_blocker">Blocker <span class="sort-arrow">↕</span></th>
+                        <th>Official Docs</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        <div id="viewMoreWrapper" style="text-align:center;margin-top:20px;">
+            <button id="viewMoreBtn" style="
+                background: var(--gradient-1);
+                color: #fff;
+                border: none;
+                padding: 12px 36px;
+                border-radius: var(--radius-sm);
+                font-family: 'Inter', sans-serif;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: opacity 0.2s, transform 0.2s;
+            " onmouseover="this.style.opacity='0.85';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='none'">View More ↓</button>
+        </div>
+        <div id="tableStats" style="margin-top: 12px; font-size: 0.82rem; color: var(--text-muted);"></div>
+    </div>
+</section>
+
+<section id="agent">
+    <div class="container">
+        <div class="section-header animate-in">
+            <span class="section-tag">Methodology</span>
+            <h2>The Research Agent</h2>
+            <p>Built with LangChain + Composio SDK. Here's how it works and where humans were needed.</p>
+        </div>
+
+        <div class="arch-flow">
+            <div class="arch-node">
+                <div class="node-icon">📋</div>
+                <div class="node-title">100 Apps List</div>
+                <div class="node-desc">Parsed from 100_apps.json</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">
+                <div class="node-icon">🔍</div>
+                <div class="node-title">Tavily Search</div>
+                <div class="node-desc">Dynamic developer docs query</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">
+                <div class="node-icon">🤖</div>
+                <div class="node-title">GPT-4o Analysis</div>
+                <div class="node-desc">Structured JSON extraction</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">
+                <div class="node-icon">✅</div>
+                <div class="node-title">Verification</div>
+                <div class="node-desc">20-app deep cross-check</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">
+                <div class="node-icon">📊</div>
+                <div class="node-title">HTML Report</div>
+                <div class="node-desc">Pattern analysis & viz</div>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="stack">Tech Stack</button>
+                <button class="tab-btn" data-tab="flow">Pipeline Flow</button>
+                <button class="tab-btn" data-tab="human">Human-in-the-Loop</button>
+            </div>
+
+            <div class="tab-content active" id="tab-stack">
+                <div class="insight-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                    <div class="insight-card">
+                        <div class="insight-icon">🦜</div>
+                        <h3>LangChain + OpenAI</h3>
+                        <p>GPT-4o (or mini) via <code>ChatOpenAI</code> for structured reasoning. System prompt engineering to extract consistent JSON schemas from search results.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">🔎</div>
+                        <h3>Tavily Search API</h3>
+                        <p>AI-native search for official developer docs with dynamic domain matching — 100% automated URL discovery with zero hardcoding.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">⚡</div>
+                        <h3>Composio SDK</h3>
+                        <p>Used in the spirit of the role — the <code>composio-langchain</code> package provides the tool integration framework this research is evaluating.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">🛡️</div>
+                        <h3>Verification Pipeline</h3>
+                        <p>Independent agent re-researches 20 sampled apps, does direct page fetching via <code>httpx</code> + <code>BeautifulSoup</code>, and compares field-by-field.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-flow">
+                <div class="code-block">
+<pre>
+1. PARSE     100_apps.json → List[AppEntry]
+             ↓
+2. SEARCH    For each app → Dynamic Tavily developer docs query
+             Batched with ThreadPoolExecutor parallel workers
+             ↓
+3. ANALYZE   Search results → GPT-4o → Structured JSON per app
+             System prompt enforces schema: auth, access, API, buildability
+             ↓
+4. CHECKPOINT Save after each batch for crash recovery
+             ↓
+5. VERIFY    Sample 20 apps (2/category) → fresh search + page fetch
+             Compare field-by-field → accuracy metrics
+             ↓
+6. GENERATE  results.json + verified_results.json → Jinja2 template rendering
+             → Self-contained HTML with Chart.js, sortable table
+</pre>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-human">
+                <div class="insight-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="insight-card">
+                        <div class="insight-icon">🤖</div>
+                        <h3>What the Agent Did</h3>
+                        <p>
+                            • All 100+ web searches<br>
+                            • Structured data extraction for 100 apps<br>
+                            • Pattern analysis and statistics<br>
+                            • Cross-verification of 20 apps<br>
+                            • HTML report generation
+                        </p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">👤</div>
+                        <h3>Where Humans Were Needed</h3>
+                        <p>
+                            • Designing the research schema and prompts<br>
+                            • Choosing which fields matter for buildability<br>
+                            • Reviewing verification misses and edge cases<br>
+                            • Apps with no public docs (e.g., fanbasis, Paygent)<br>
+                            • Final editorial review of patterns narrative
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="verification">
+    <div class="container">
+        <div class="section-header animate-in">
+            <span class="section-tag">Accuracy</span>
+            <h2>Verification Report</h2>
+            <p>We sampled {{ v_sample }} apps, re-researched each independently, and compared field-by-field.</p>
+        </div>
+
+        <div class="v-grid" id="vMetrics">
+            
+        </div>
+
+        <div class="chart-card">
+            <h3>📋 Per-Field Accuracy</h3>
+            <div class="chart-container" style="height: 250px;"><canvas id="fieldAccChart"></canvas></div>
+        </div>
+
+        <div class="chart-card" style="margin-top: 24px;">
+            <h3>🔬 Detailed Verification Results</h3>
+            <div style="overflow-x: auto;">
+                <table class="v-table" id="vTable">
+                    <thead>
+                        <tr>
+                            <th>App</th>
+                            <th>Category</th>
+                            <th>Auth</th>
+                            <th>Access</th>
+                            <th>API Type</th>
+                            <th>Breadth</th>
+                            <th>Buildability</th>
+                            <th>MCP</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>
+            Built by an AI Research Agent — Composio AI Product Ops Assignment<br>
+            <span style="opacity: 0.6;">Stack: LangChain + GPT-4o + Tavily + Composio SDK · Generated {{ generation_date }}</span><br>
+            <a href="https://github.com" target="_blank">Source Repository</a> · <a href="https://composio.dev" target="_blank">Composio</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+const RESULTS = {{ results_json | safe }};
+const PATTERNS = {{ patterns_json | safe }};
+const VERIFICATION = {{ verification_json | safe }};
+
+Chart.defaults.color = '#9898b0';
+Chart.defaults.borderColor = 'rgba(42,42,74,0.5)';
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 12;
+
+const COLORS = ['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6','#f97316','#64748b'];
+
+function renderInsights() {
+    const auth = PATTERNS.auth_distribution || {};
+    const serve = PATTERNS.self_serve_distribution || {};
+    const build = PATTERNS.buildability_distribution || {};
+    const total = PATTERNS.total_apps || 100;
+    
+    const topAuth = Object.keys(auth)[0] || 'OAuth2';
+    const topAuthPct = Math.round((auth[topAuth] || 0) / total * 100);
+    
+    const selfServeCount = Object.entries(serve).filter(([k]) => k.includes('Self-Serve')).reduce((s,[,v]) => s+v, 0);
+    const selfServePct = Math.round(selfServeCount / total * 100);
+    
+    const easyCount = build['Easy'] || 0;
+    const modCount = build['Moderate'] || 0;
+    const easyModPct = Math.round((easyCount + modCount) / total * 100);
+    
+    const blockers = PATTERNS.top_blockers || {};
+    const topBlocker = Object.keys(blockers)[0] || 'N/A';
+    
+    const insights = [
+        {
+            icon: '🔐',
+            title: `${topAuth} Dominates Authentication`,
+            body: `<span class="highlight">${topAuthPct}%</span> of apps use ${topAuth}. API Key is the second most common. This means Composio's OAuth2 infrastructure covers the majority of apps out of the box.`
+        },
+        {
+            icon: '🚪',
+            title: `${selfServePct}% Are Self-Serve Accessible`,
+            body: `Most apps offer free tier or trial API access. Developer-friendly categories (Productivity, Developer tools) lead, while Finance and Enterprise apps trend toward gated access.`
+        },
+        {
+            icon: '🏗️',
+            title: `${easyModPct}% Are Buildable Today`,
+            body: `<span class="highlight">${easyCount}</span> apps rated "Easy" and <span class="highlight">${modCount}</span> "Moderate" — meaning ${easyModPct}% of apps could be Composio toolkits with standard effort.`
+        },
+        {
+            icon: '🚧',
+            title: `Top Blocker: ${topBlocker}`,
+            body: `The most common reason apps aren't Easy to build. This pattern repeats across enterprise and fintech categories especially.`
+        },
+        {
+            icon: '🔌',
+            title: `${PATTERNS.mcp_count || 0} Apps Have MCP Servers`,
+            body: `Only ${PATTERNS.mcp_pct || 0}% of apps have an existing MCP server — a massive opportunity for Composio to fill the gap and become the default MCP provider.`
+        },
+        {
+            icon: '🎯',
+            title: `${PATTERNS.easy_wins_count || 0} Easy Wins Identified`,
+            body: `Apps that are both self-serve AND rated Easy — these are the lowest-hanging fruit for new toolkit development. Start here for maximum velocity.`
+        }
+    ];
+    
+    const container = document.getElementById('insight-cards');
+    container.innerHTML = insights.map((ins, i) => `
+        <div class="insight-card animate-in delay-${i+1}">
+            <div class="insight-icon">${ins.icon}</div>
+            <h3>${ins.title}</h3>
+            <p>${ins.body}</p>
+        </div>
+    `).join('');
+}
+
+function renderCharts() {
+    const authData = PATTERNS.auth_distribution || {};
+    new Chart(document.getElementById('authChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(authData),
+            datasets: [{
+                data: Object.values(authData),
+                backgroundColor: COLORS,
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { padding: 12, usePointStyle: true, pointStyle: 'circle' } }
+            }
+        }
+    });
+
+    const serveData = PATTERNS.self_serve_distribution || {};
+    const serveColors = {
+        'Self-Serve Free': '#10b981',
+        'Self-Serve Trial': '#06b6d4',
+        'Paid Plan Required': '#f59e0b',
+        'Admin/Partner Gated': '#ef4444',
+        'Contact Sales': '#6b7280'
+    };
+    new Chart(document.getElementById('serveChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(serveData),
+            datasets: [{
+                data: Object.values(serveData),
+                backgroundColor: Object.keys(serveData).map(k => serveColors[k] || '#64748b'),
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { padding: 12, usePointStyle: true, pointStyle: 'circle' } }
+            }
+        }
+    });
+
+    const buildData = PATTERNS.buildability_distribution || {};
+    const buildColors = { 'Easy': '#10b981', 'Moderate': '#f59e0b', 'Hard': '#ef4444', 'Not Feasible': '#6b7280', 'Unknown': '#374151' };
+    new Chart(document.getElementById('buildChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(buildData),
+            datasets: [{
+                data: Object.values(buildData),
+                backgroundColor: Object.keys(buildData).map(k => buildColors[k] || '#64748b'),
+                borderRadius: 6,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    const blockerData = PATTERNS.top_blockers || {};
+    const blockerLabels = Object.keys(blockerData).map(l => l.length > 30 ? l.slice(0,30)+'…' : l);
+    new Chart(document.getElementById('blockerChart'), {
+        type: 'bar',
+        data: {
+            labels: blockerLabels,
+            datasets: [{
+                data: Object.values(blockerData),
+                backgroundColor: '#ef4444',
+                borderRadius: 6,
+                barThickness: 24
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+}
+
+function renderHeatmap() {
+    const categories = {{ categories_json | safe }};
+    const verdicts = ['Easy', 'Moderate', 'Hard', 'Not Feasible'];
+    const data = PATTERNS.buildability_by_category || {};
+    
+    let html = '<thead><tr><th>Category</th>';
+    verdicts.forEach(v => html += `<th>${v}</th>`);
+    html += '<th>Total</th></tr></thead><tbody>';
+    
+    categories.forEach(cat => {
+        const catData = data[cat] || {};
+        const total = verdicts.reduce((s, v) => s + (catData[v] || 0), 0);
+        html += `<tr><th>${cat}</th>`;
+        verdicts.forEach(v => {
+            const val = catData[v] || 0;
+            const heat = val === 0 ? 0 : Math.min(5, Math.ceil(val / 2));
+            html += `<td class="heat-${heat}">${val || '—'}</td>`;
+        });
+        html += `<td style="font-weight:700">${total}</td></tr>`;
+    });
+    
+    html += '</tbody>';
+    document.getElementById('buildHeatmap').innerHTML = html;
+}
+
+let sortCol = 'id';
+let sortDir = 1;
+
+function getBadgeClass(verdict) {
+    const map = { 'Easy':'badge-easy', 'Moderate':'badge-moderate', 'Hard':'badge-hard', 'Not Feasible':'badge-not-feasible' };
+    return map[verdict] || 'badge-unknown';
+}
+
+function getAuthBadge(method) {
+    if (method.includes('OAuth')) return 'badge-oauth';
+    if (method.includes('API') || method.includes('Key')) return 'badge-apikey';
+    if (method.includes('Token') || method.includes('Bearer') || method.includes('JWT')) return 'badge-token';
+    if (method.includes('Basic')) return 'badge-basic';
+    return 'badge-unknown';
+}
+
+function getServeBadge(serve) {
+    if (serve.includes('Self-Serve Free')) return 'badge-selfserve';
+    if (serve.includes('Trial')) return 'badge-trial';
+    if (serve.includes('Paid')) return 'badge-paid';
+    if (serve.includes('Gated') || serve.includes('Sales')) return 'badge-gated';
+    return 'badge-unknown';
+}
+
+let visibleRows = 10;
+let lastFiltered = [];
+
+function renderRow(r) {
+    return `<tr>
+        <td>${r.id}</td>
+        <td>
+            <div class="app-name">${r.name}</div>
+            <a href="https://${r.website}" target="_blank" class="app-website">${r.website}</a>
+        </td>
+        <td style="font-size:0.78rem;color:var(--text-secondary)">${r.category}</td>
+        <td style="font-size:0.8rem;color:var(--text-secondary);max-width:200px">${r.description || '—'}</td>
+        <td><div class="auth-badges">${(r.auth_methods||[]).map(m => `<span class="badge ${getAuthBadge(m)}">${m}</span>`).join('')}</div></td>
+        <td><span class="badge ${getServeBadge(r.self_serve||'')}">${r.self_serve || '—'}</span></td>
+        <td style="font-size:0.82rem">${r.api_type || '—'}</td>
+        <td style="font-size:0.82rem">${r.api_breadth || '—'}</td>
+        <td><span class="badge ${r.has_mcp ? 'badge-easy' : 'badge-oauth'}" title="${r.mcp_details || (r.has_mcp ? 'MCP Server Exists' : 'Composio MCP Server Recommended')}">${r.has_mcp ? '🟢 MCP Available' : '⚡ MCP Needed'}</span></td>
+        <td><span class="badge ${getBadgeClass(r.buildability_verdict)}">${r.buildability_verdict || '—'}</span></td>
+        <td style="font-size:0.78rem;color:var(--text-secondary);max-width:180px">${r.main_blocker || '—'}</td>
+        <td>${r.evidence_url ? `<a href="${r.evidence_url}" target="_blank" class="app-website">Docs ↗</a>` : '—'}</td>
+    </tr>`;
+}
+
+function renderTable(resetPage) {
+    if (resetPage) visibleRows = 10;
+
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const catFilter = document.getElementById('categoryFilter').value;
+    const buildFilter = document.getElementById('buildFilter').value;
+    const serveFilter = document.getElementById('serveFilter').value;
+    const mcpFilter = document.getElementById('mcpFilter').value;
+
+    let filtered = RESULTS.filter(r => {
+        if (search && !r.name.toLowerCase().includes(search) && !(r.category||'').toLowerCase().includes(search)) return false;
+        if (catFilter && r.category !== catFilter) return false;
+        if (buildFilter && r.buildability_verdict !== buildFilter) return false;
+        if (serveFilter && r.self_serve !== serveFilter) return false;
+        if (mcpFilter === 'available' && !r.has_mcp) return false;
+        if (mcpFilter === 'needed' && r.has_mcp) return false;
+        return true;
+    });
+
+    filtered.sort((a, b) => {
+        let va = a[sortCol] || '';
+        let vb = b[sortCol] || '';
+        if (sortCol === 'auth') { va = (a.auth_methods||[]).join(','); vb = (b.auth_methods||[]).join(','); }
+        if (sortCol === 'has_mcp') { va = a.has_mcp ? 1 : 0; vb = b.has_mcp ? 1 : 0; }
+        if (sortCol === 'id') return (a.id - b.id) * sortDir;
+        if (typeof va === 'string') return va.localeCompare(vb) * sortDir;
+        return (va - vb) * sortDir;
+    });
+
+    lastFiltered = filtered;
+    const showing = Math.min(visibleRows, filtered.length);
+
+    document.getElementById('tableBody').innerHTML = filtered.slice(0, showing).map(renderRow).join('');
+
+    const remaining = filtered.length - showing;
+    const btn = document.getElementById('viewMoreBtn');
+    const wrapper = document.getElementById('viewMoreWrapper');
+    if (remaining > 0) {
+        btn.textContent = `View More ↓  (${remaining} remaining)`;
+        wrapper.style.display = 'block';
+    } else {
+        wrapper.style.display = 'none';
+    }
+
+    document.getElementById('tableStats').textContent = `Showing ${showing} of ${filtered.length} apps`;
+}
+
+function populateFilters() {
+    const cats = [...new Set(RESULTS.map(r => r.category))].filter(Boolean).sort();
+    const select = document.getElementById('categoryFilter');
+    cats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+    });
+}
+
+function renderVerification() {
+    const metrics = VERIFICATION.metrics || {};
+    const verifications = VERIFICATION.verifications || [];
+    
+    const vGrid = document.getElementById('vMetrics');
+    const overallPct = metrics.overall_accuracy_pct || 'N/A';
+    const correct = metrics.apps_fully_correct || 0;
+    const partial = metrics.apps_partially_correct || 0;
+    const incorrect = metrics.apps_incorrect || 0;
+    
+    vGrid.innerHTML = `
+        <div class="v-metric">
+            <div class="v-value" style="color: ${overallPct >= 80 ? 'var(--accent-4)' : overallPct >= 60 ? 'var(--accent-5)' : 'var(--accent-6)'}">${overallPct}%</div>
+            <div class="v-label">Overall Accuracy</div>
+        </div>
+        <div class="v-metric">
+            <div class="v-value" style="color: var(--accent-4);">${correct}</div>
+            <div class="v-label">✅ Fully Correct</div>
+        </div>
+        <div class="v-metric">
+            <div class="v-value" style="color: var(--accent-5);">${partial}</div>
+            <div class="v-label">⚠️ Partially Correct</div>
+        </div>
+        <div class="v-metric">
+            <div class="v-value" style="color: var(--accent-6);">${incorrect}</div>
+            <div class="v-label">❌ Incorrect</div>
+        </div>
+    `;
+    
+    const fieldStats = metrics.field_stats || {};
+    if (Object.keys(fieldStats).length > 0) {
+        new Chart(document.getElementById('fieldAccChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(fieldStats).map(k => k.replace('_', ' ')),
+                datasets: [
+                    { label: 'Correct', data: Object.values(fieldStats).map(s => s.correct), backgroundColor: '#10b981', borderRadius: 4 },
+                    { label: 'Partial', data: Object.values(fieldStats).map(s => s.partial), backgroundColor: '#f59e0b', borderRadius: 4 },
+                    { label: 'Wrong', data: Object.values(fieldStats).map(s => s.wrong), backgroundColor: '#ef4444', borderRadius: 4 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false } },
+                    y: { stacked: true, grid: { display: false } }
+                },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    }
+    
+    const vTableBody = document.getElementById('vTableBody');
+    const fields = ['auth_methods', 'self_serve', 'api_type', 'api_breadth', 'buildability_verdict', 'has_mcp'];
+    
+    vTableBody.innerHTML = verifications.map(v => {
+        const getStatus = (field) => {
+            if (v[field] && typeof v[field] === 'object') return v[field].status || '❓';
+            return '❓';
+        };
+        const overall = v.overall_accuracy || 'N/A';
+        const overallColor = overall === 'Correct' ? 'var(--accent-4)' : overall === 'Partially Correct' ? 'var(--accent-5)' : 'var(--accent-6)';
+        
+        return `<tr>
+            <td style="font-weight:600">${v.app_name || 'N/A'}</td>
+            <td style="font-size:0.78rem;color:var(--text-secondary)">${v.category || ''}</td>
+            ${fields.map(f => `<td style="text-align:center">${getStatus(f)}</td>`).join('')}
+            <td style="font-weight:700;color:${overallColor}">${overall}</td>
+        </tr>`;
+    }).join('');
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+    });
+});
+
+document.querySelectorAll('.data-table th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+        const col = th.dataset.sort;
+        if (sortCol === col) sortDir *= -1;
+        else { sortCol = col; sortDir = 1; }
+        document.querySelectorAll('.data-table th').forEach(h => h.classList.remove('sorted'));
+        th.classList.add('sorted');
+        renderTable();
+    });
+});
+
+document.getElementById('searchInput').addEventListener('input', () => renderTable(true));
+document.getElementById('categoryFilter').addEventListener('change', () => renderTable(true));
+document.getElementById('buildFilter').addEventListener('change', () => renderTable(true));
+document.getElementById('serveFilter').addEventListener('change', () => renderTable(true));
+document.getElementById('mcpFilter').addEventListener('change', () => renderTable(true));
+
+document.getElementById('viewMoreBtn').addEventListener('click', () => {
+    visibleRows += 10;
+    renderTable(false);
+});
+
+renderInsights();
+populateFilters();
+renderTable(true);
+renderCharts();
+renderHeatmap();
+renderVerification();
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.animate-in').forEach(el => {
+    el.style.animationPlayState = 'paused';
+    observer.observe(el);
+});
+</script>
+</body>
+</html>
